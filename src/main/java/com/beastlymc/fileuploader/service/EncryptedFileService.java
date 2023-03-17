@@ -6,11 +6,17 @@ import com.beastlymc.fileuploader.request.EncryptedFileRequest;
 import com.beastlymc.fileuploader.utils.EncryptionUtility;
 import com.beastlymc.fileuploader.utils.FileUtility;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -49,6 +55,22 @@ public class EncryptedFileService {
         return fileRepository.findById(id)
                 .map(encryptedFile -> new ResponseEntity<>(encryptedFile, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+    }
+
+    public ResponseEntity<Resource> downloadEncryptedFile(String fileName) throws MalformedURLException, FileNotFoundException {
+        Path filePath = Paths.get("D:\\Programming\\file-uploader\\src\\main\\resources\\cdn\\" + fileName);
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if(!resource.exists()) {
+            throw new FileNotFoundException("File not found: " + fileName);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 
     /**

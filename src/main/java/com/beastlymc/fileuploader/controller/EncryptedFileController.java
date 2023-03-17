@@ -3,9 +3,19 @@ package com.beastlymc.fileuploader.controller;
 import com.beastlymc.fileuploader.db.EncryptedFile;
 import com.beastlymc.fileuploader.request.EncryptedFileRequest;
 import com.beastlymc.fileuploader.service.EncryptedFileService;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -47,6 +57,12 @@ public class EncryptedFileController {
     @GetMapping("/{id}")
     public ResponseEntity<EncryptedFile> getFileByID(@PathVariable(value = "id") Long id) {
         return fileService.getEncryptedFile(id);
+    }
+
+    @CrossOrigin
+    @PostMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("file") String fileName) throws IOException {
+        return fileService.downloadEncryptedFile(fileName);
     }
 
     /**
