@@ -34,15 +34,15 @@ build/
 
 ### Frontend ###
 # dependencies
-src/main/react/node_modules
-/.pnp
-.pnp.js
+**/react/node_modules
+**/react/*.pnp
+**/react/*.pnp.js
 
 # testing
-/coverage
+**/react/coverage
 
 # production
-/build
+**/react/build
 
 # misc
 .DS_Store
