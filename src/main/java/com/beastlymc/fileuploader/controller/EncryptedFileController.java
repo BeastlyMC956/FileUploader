@@ -1,38 +1,64 @@
 package com.beastlymc.fileuploader.controller;
 
-import com.beastlymc.fileuploader.repository.EncryptedFileRepository;
-import com.beastlymc.fileuploader.sql.EncryptedFile;
+import com.beastlymc.fileuploader.db.EncryptedFile;
+import com.beastlymc.fileuploader.request.EncryptedFileRequest;
+import com.beastlymc.fileuploader.service.EncryptedFileService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * The controller responsible for handling requests related to encrypted files.
+ */
 @RestController
-@RequestMapping(value = "api/v1/encrypted_files")
+@RequestMapping("api/v1/encrypted_files")
 public class EncryptedFileController {
-    private final EncryptedFileRepository fileRepository;
+    private final EncryptedFileService fileService;
 
-    public EncryptedFileController(EncryptedFileRepository fileRepository) {this.fileRepository = fileRepository;}
+    /**
+     * Initializes the controller with the given EncryptedFileService.
+     *
+     * @param fileService The EncryptedFileService instance.
+     */
+    public EncryptedFileController(EncryptedFileService fileService) {
+        this.fileService = fileService;
+    }
 
+    /**
+     * Retrieves a list of all encrypted files.
+     *
+     * @return A list of all EncryptedFile instances.
+     */
     @CrossOrigin
-    @GetMapping(value = "/all")
+    @GetMapping("/all")
     public List<EncryptedFile> getFiles() {
-        return fileRepository.findAll();
+        return fileService.getAllEncryptedFiles();
     }
 
-    record EncryptedFileRequest(byte[] fileContent, String encryptionKey){}
 
+    /**
+     * Retrieves an encrypted file by its ID.
+     *
+     * @param id The ID of the encrypted file to retrieve.
+     * @return A ResponseEntity containing the EncryptedFile instance if found, or a NOT_FOUND status.
+     */
     @CrossOrigin
-    @PostMapping(value = "/add")
-    public void addEncryptedFile(@RequestBody EncryptedFileRequest request) {
-        EncryptedFile encryptedFile = new EncryptedFile();
-        // ENCRYPT THE FILE
-        encryptedFile.setFilePath("cdn/" + ThreadLocalRandom.current().nextInt(100));
-        encryptedFile.setFileContent(request.fileContent);
-        encryptedFile.setEncryptionKey(request.encryptionKey);
-        fileRepository.save(encryptedFile);
-
+    @GetMapping("/{id}")
+    public ResponseEntity<EncryptedFile> getFileByID(@PathVariable(value = "id") Long id) {
+        return fileService.getEncryptedFile(id);
     }
+
+    /**
+     * Uploads an encrypted file and saves it in the repository.
+     *
+     * @param request The EncryptedFileRequest containing the file name, content, and encryption key.
+     * @return A ResponseEntity containing the ID of the saved file and a CREATED status.
+     */
+    @CrossOrigin
+    @PostMapping("/upload")
+    public ResponseEntity<Long> addEncryptedFile(@RequestBody EncryptedFileRequest request) {
+        return fileService.uploadFile(request);
+    }
+
 }

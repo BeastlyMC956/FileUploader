@@ -1,4 +1,4 @@
-package com.beastlymc.fileuploader.sql;
+package com.beastlymc.fileuploader.db;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,15 +10,15 @@ import java.util.Objects;
 
 @Entity
 public class EncryptedFile {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-        private String filePath;
-        private byte[] fileContent;
-        private String encryptionKey;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String fileName;
+    private byte[] fileContent;
+    private String encryptionKey;
 
-    public EncryptedFile(String filePath, byte[] fileContent, String encryptionKey) {
-        this.filePath = filePath;
+    public EncryptedFile(String fileName, byte[] fileContent, String encryptionKey) {
+        this.fileName = fileName;
         this.fileContent = fileContent;
         this.encryptionKey = encryptionKey;
     }
@@ -32,14 +32,14 @@ public class EncryptedFile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EncryptedFile that = (EncryptedFile) o;
-        return Objects.equals(id, that.id) && Objects.equals(filePath,
-                                                             that.filePath) && Arrays.equals(
+        return Objects.equals(id, that.id) && Objects.equals(fileName,
+                                                             that.fileName) && Arrays.equals(
                 fileContent, that.fileContent) && Objects.equals(encryptionKey, that.encryptionKey);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, filePath, encryptionKey);
+        int result = Objects.hash(id, fileName, encryptionKey);
         result = 31 * result + Arrays.hashCode(fileContent);
         return result;
     }
@@ -52,12 +52,12 @@ public class EncryptedFile {
         this.id = id;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public byte[] getFileContent() {
