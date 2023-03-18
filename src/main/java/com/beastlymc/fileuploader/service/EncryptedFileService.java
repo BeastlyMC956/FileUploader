@@ -15,8 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -57,16 +58,29 @@ public class EncryptedFileService {
                 .orElse(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
     }
 
-    public ResponseEntity<Resource> downloadEncryptedFile(String fileName) throws MalformedURLException, FileNotFoundException {
-        Path filePath = Paths.get("D:\\Programming\\file-uploader\\src\\main\\resources\\cdn\\" + fileName);
+    public ResponseEntity<Resource> downloadEncryptedFile(long id, String encryptionKey) throws IOException {
+        EncryptedFile response = getEncryptedFile(id).getBody();
+        if(response == null) {
+            throw new RuntimeException("Can't find a file with the ID of " + id);
+        }
+        Path filePath = Paths.get("D:\\Programming\\file-uploader\\src\\main\\resources\\cdn\\" + id + "_" + response.getFileName());
+        //TODO: Call to delete the file once downloaded
         Resource resource = new UrlResource(filePath.toUri());
 
         if(!resource.exists()) {
-            throw new FileNotFoundException("File not found: " + fileName);
+            throw new FileNotFoundException("File not found: " + response.getFileName());
+        }
+
+        byte[] decryptedFile = EncryptionUtility.decryptFile(Files.readAllBytes(filePath), encryptionKey);
+
+        try (FileOutputStream fos = new FileOutputStream(resource.getFile())) {
+            fos.write(decryptedFile); // write bytes to file
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename());
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -83,8 +97,14 @@ public class EncryptedFileService {
     public ResponseEntity<Long> uploadFile(@NotNull EncryptedFileRequest request) {
         EncryptedFile encryptedFile = new EncryptedFile();
         encryptedFile.setFileName(request.fileName());
-        String fileName = getFolderSize() + "_" + request.fileName();
+
         byte[] encryptedContent = EncryptionUtility.encryptFile(request.fileContent(), request.encryptionKey());
+
+        encryptedFile.setFileContent(encryptedContent);
+        encryptedFile.setEncryptionKey(request.encryptionKey());
+
+        EncryptedFile postRequest = fileRepository.save(encryptedFile);
+        String fileName = postRequest.getId() + "_" + request.fileName();
 
         try {
             FileUtility.createFile(DIRECTORY, fileName, encryptedContent);
@@ -92,23 +112,6 @@ public class EncryptedFileService {
             throw new RuntimeException("Couldn't create a file", exception);
         }
 
-        encryptedFile.setFileContent(encryptedContent);
-        encryptedFile.setEncryptionKey(request.encryptionKey());
-
-        return new ResponseEntity<>(fileRepository.save(encryptedFile).getId(), HttpStatus.CREATED);
-    }
-
-    /**
-     * Gets the size of the directory storing encrypted files.
-     *
-     * @return The number of files in the directory.
-     * @throws RuntimeException If there is an issue getting the folder size.
-     */
-    private long getFolderSize() {
-        try {
-            return FileUtility.getFolderSize(DIRECTORY);
-        } catch (IOException ioException) {
-            throw new RuntimeException(ioException.getMessage());
-        }
+        return new ResponseEntity<>(postRequest.getId(), HttpStatus.CREATED);
     }
 }

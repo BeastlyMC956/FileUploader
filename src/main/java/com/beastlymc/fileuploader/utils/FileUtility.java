@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 public final class FileUtility {
 
@@ -18,11 +17,5 @@ public final class FileUtility {
         File localFile = new File(directory.toFile(), fileName);
 
         Files.write(localFile.toPath(), fileContents);
-    }
-
-    public static long getFolderSize(Path directory) throws IOException {
-        try (Stream<Path> fileStream = Files.list(directory)) {
-            return fileStream.filter(file -> file.toFile().isFile()).count();
-        }
     }
 }

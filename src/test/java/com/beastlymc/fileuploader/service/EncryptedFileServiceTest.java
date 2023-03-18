@@ -64,7 +64,7 @@ class EncryptedFileServiceTest {
 
         ResponseEntity<EncryptedFile> result = fileService.getEncryptedFile(1L);
 
-        assertEquals(HttpStatus.FOUND, result.getStatusCode());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(file1, result.getBody());
         verify(fileRepository, times(1)).findById(1L);
     }

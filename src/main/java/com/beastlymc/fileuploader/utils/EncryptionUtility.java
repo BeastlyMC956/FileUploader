@@ -22,7 +22,7 @@ public final class EncryptionUtility {
 
     public static byte[] getBytes(byte[] inputBytes, String key, int cipherType) {
         try {
-            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(),"AES");
 
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(cipherType, secretKey);
