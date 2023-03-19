@@ -101,7 +101,6 @@ public class EncryptedFileService {
         byte[] encryptedContent = EncryptionUtility.encryptFile(request.fileContent(), request.encryptionKey());
 
         encryptedFile.setFileContent(encryptedContent);
-        encryptedFile.setEncryptionKey(request.encryptionKey());
 
         EncryptedFile postRequest = fileRepository.save(encryptedFile);
         String fileName = postRequest.getId() + "_" + request.fileName();

@@ -15,12 +15,10 @@ public class EncryptedFile {
     private Long id;
     private String fileName;
     private byte[] fileContent;
-    private String encryptionKey;
 
-    public EncryptedFile(String fileName, byte[] fileContent, String encryptionKey) {
+    public EncryptedFile(String fileName, byte[] fileContent) {
         this.fileName = fileName;
         this.fileContent = fileContent;
-        this.encryptionKey = encryptionKey;
     }
 
     public EncryptedFile() {
@@ -34,12 +32,12 @@ public class EncryptedFile {
         EncryptedFile that = (EncryptedFile) o;
         return Objects.equals(id, that.id) && Objects.equals(fileName,
                                                              that.fileName) && Arrays.equals(
-                fileContent, that.fileContent) && Objects.equals(encryptionKey, that.encryptionKey);
+                fileContent, that.fileContent);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, fileName, encryptionKey);
+        int result = Objects.hash(id, fileName);
         result = 31 * result + Arrays.hashCode(fileContent);
         return result;
     }
@@ -66,13 +64,5 @@ public class EncryptedFile {
 
     public void setFileContent(byte[] fileContent) {
         this.fileContent = fileContent;
-    }
-
-    public String getEncryptionKey() {
-        return encryptionKey;
-    }
-
-    public void setEncryptionKey(String encryptionKey) {
-        this.encryptionKey = encryptionKey;
     }
 }

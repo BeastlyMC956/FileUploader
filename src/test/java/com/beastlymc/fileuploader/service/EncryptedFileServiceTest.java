@@ -40,10 +40,10 @@ class EncryptedFileServiceTest {
     private EncryptedFile file2;
     private EncryptedFileRequest request;
 
-    @BeforeEach    void setUp() {
-        file1 = new EncryptedFile("file1.txt", "content1".getBytes(), "RsUxvchRXo9ifFCJ");
+    @BeforeEach void setUp() {
+        file1 = new EncryptedFile("file1.txt", "content1".getBytes());
         file1.setId(1L);
-        file2 = new EncryptedFile("file2.txt", "content2".getBytes(), "EMZVzwiRckJYpcg3");
+        file2 = new EncryptedFile("file2.txt", "content2".getBytes());
         file2.setId(2L);
         request = new EncryptedFileRequest("file3.txt", "content3".getBytes(), "Tojsc9YUxokwP27B");
     }
@@ -82,8 +82,7 @@ class EncryptedFileServiceTest {
 
     @Test
     void testUploadFile() {
-        EncryptedFile encryptedFile = new EncryptedFile(request.fileName(), request.fileContent(),
-                                                        request.encryptionKey());
+        EncryptedFile encryptedFile = new EncryptedFile(request.fileName(), request.fileContent());
         encryptedFile.setId(3L);
 
         when(fileRepository.save(any(EncryptedFile.class))).thenReturn(encryptedFile);

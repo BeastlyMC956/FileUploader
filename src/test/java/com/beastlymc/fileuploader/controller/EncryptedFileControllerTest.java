@@ -34,9 +34,9 @@ class EncryptedFileControllerTest {
 
     @BeforeEach
     void setUp() {
-        file1 = new EncryptedFile("file1.txt", "content1".getBytes(), "aZDXEdX6G5FfVo5Z");
+        file1 = new EncryptedFile("file1.txt", "content1".getBytes());
         file1.setId(1L);
-        file2 = new EncryptedFile("file2.txt", "content2".getBytes(), "QS4Dzwjp40i4JfxP");
+        file2 = new EncryptedFile("file2.txt", "content2".getBytes());
         file2.setId(2L);
         request = new EncryptedFileRequest("file3.txt", "content3".getBytes(), "cq3pw9XjBksDIs4s");
     }
