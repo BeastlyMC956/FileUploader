@@ -1,5 +1,4 @@
 # File Uploader 0.5
-[![CI Status](https://github.com/junit-team/junit5/workflows/CI/badge.svg)](https://github.com/junit-team/junit5/actions)
 
 Uploading encrypted files in to a database and later retrieving the files if the decryption key is correct.
 
